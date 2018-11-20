@@ -24,7 +24,7 @@ def crawl_loupan(area_code):
 	page = math.ceil(int(result_count)/30)
 	print('>>>>> total count:', result_count, 'page:', page)
 
-	with open('anjuke/'+area_code+'.csv', 'w', encoding='utf-8', newline='') as csvfile:
+	with open('anjuke/.'+area_code+'.csv', 'w', encoding='utf-8-sig', newline='') as csvfile:
 		writer = csv.writer(csvfile)
 		headers = ['详情链接', '缩略图', '楼盘名称', '楼盘地址', '户型', '楼盘状态', '楼盘标签', '楼盘价格']
 		writer.writerow(headers)
