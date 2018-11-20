@@ -1,6 +1,8 @@
-# coding: utf-8
+# encoding: utf-8
 
+import csv
 import math
+import time
 
 import requests
 from lxml import etree
@@ -22,28 +24,34 @@ def crawl_loupan(area_code):
 	page = math.ceil(int(result_count)/30)
 	print('>>>>> total count:', result_count, 'page:', page)
 
-	for i in range(1, page+1):
-		loupan_url = base_url+'all/p'+str(i)+'/'
-		print(loupan_url)
-		resp = session.get(loupan_url)
-		loupan_html = etree.HTML(resp.text)
+	with open('anjuke/'+area_code+'.csv', 'w', encoding='utf-8', newline='') as csvfile:
+		writer = csv.writer(csvfile)
+		headers = ['详情链接', '缩略图', '楼盘名称', '楼盘地址', '户型', '楼盘状态', '楼盘标签', '楼盘价格']
+		writer.writerow(headers)
 
-		loupan_list = loupan_html.xpath('//div[@class="key-list"]/div[@class="item-mod "]')
-		for loupan in loupan_list:
-			href = loupan.xpath('./a[@class="pic"]/@href')[0]   # 详情链接
-			thum_img = loupan.xpath('./a[@class="pic"]/img/@src')[0]    # 缩略图
-			name = loupan.xpath('./div[@class="infos"]/a[@class="lp-name"]/h3/span/text()')[0]  # 楼盘名称
-			address = loupan.xpath('./div[@class="infos"]/a[@class="address"]/span/text()')[0]  # 楼盘地址
-			huxing = loupan.xpath('./div[@class="infos"]/a[@class="huxing"]/span/text()')	# 户型
-			status = loupan.xpath('./div[@class="infos"]/a[@class="tags-wrap"]/div/i/text()')	# 楼盘状态
-			tags = loupan.xpath('./div[@class="infos"]/a[@class="tags-wrap"]/div/span/text()')	# 楼盘标签
-			price_ele = loupan.xpath('./a[@class="favor-pos"]')[0]
-			price_info = price_ele.xpath('string(.)').strip().replace(' ', '').replace('\n', '').replace('\r', '')
+		for i in range(1, page+1):
+			loupan_url = base_url+'all/p'+str(i)+'/'
+			print(loupan_url)
+			resp = session.get(loupan_url)
+			loupan_html = etree.HTML(resp.text)
 
-			print(href, thum_img)
-			print(name, address, huxing)
-			print(status, tags, price_info)
-		break
+			loupan_list = loupan_html.xpath('//div[@class="key-list"]/div[@class="item-mod "]')
+			for loupan in loupan_list:
+				href = loupan.xpath('./a[@class="pic"]/@href')[0]   # 详情链接
+				thum_img = loupan.xpath('./a[@class="pic"]/img/@src')[0]    # 缩略图
+				name = loupan.xpath('./div[@class="infos"]/a[@class="lp-name"]/h3/span/text()')[0]  # 楼盘名称
+				address = loupan.xpath('./div[@class="infos"]/a[@class="address"]/span/text()')[0]  # 楼盘地址
+				huxing = loupan.xpath('./div[@class="infos"]/a[@class="huxing"]/span/text()')	# 户型
+				status = loupan.xpath('./div[@class="infos"]/a[@class="tags-wrap"]/div/i/text()')	# 楼盘状态
+				tags = loupan.xpath('./div[@class="infos"]/a[@class="tags-wrap"]/div/span/text()')	# 楼盘标签
+				price_ele = loupan.xpath('./a[@class="favor-pos"]')[0]
+				price_info = price_ele.xpath('string(.)').strip().replace(' ', '').replace('\n', '').replace('\r', '')	# 楼盘价格
+
+				print(href, thum_img)
+				print(name, address, huxing)
+				print(status, tags, price_info)
+				writer.writerow([href, thum_img, name, address, huxing, status, tags, price_info])
+			time.sleep(1)
 
 	# with open('anjuke/result.html', 'w', encoding='utf-8') as f:
 	#     f.write(r.text)
