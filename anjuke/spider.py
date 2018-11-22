@@ -58,4 +58,7 @@ def crawl_loupan(area_code):
 
 
 if __name__ == "__main__":
-	crawl_loupan('wx')
+	# crawl_loupan('wx')	# 无锡楼盘
+	# crawl_loupan('hf')	# 合肥楼盘
+	# crawl_loupan('nj')	# 南京楼盘
+	crawl_loupan('hz')	# 杭州楼盘
